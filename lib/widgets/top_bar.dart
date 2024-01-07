@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -8,7 +9,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
         elevation: 25,
         backgroundColor: Colors.blue[100],
-        leading: Icon(Icons.menu),
+        leading: IconButton(
+            icon: Icon(Icons.home), onPressed: () => context.go('/')),
         title: Text("Quiz Vault"),
         actions: [
           ElevatedButton(

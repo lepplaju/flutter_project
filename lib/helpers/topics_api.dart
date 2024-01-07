@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import './topic.dart';
 
 class TopicsApi {
-  Future<List<String>> getTopics() async {
+  Future<List<Topic>> getTopics() async {
     var response =
         await http.get(Uri.parse('https://dad-quiz-api.deno.dev/topics'));
 
-    List<dynamic> topics = jsonDecode(response.body);
-    return List<String>.from(topics.map(
-      (jsonData) => (jsonData['name']),
-    ));
+    List<dynamic> topicItems = jsonDecode(response.body);
+    return List<Topic>.from(
+        topicItems.map((jsonData) => Topic.fromJson(jsonData)));
   }
 }
