@@ -22,13 +22,12 @@ class QuestionPage extends StatefulWidget {
 
 class _QuestionPageState extends State<QuestionPage> {
   Question? _question;
+  int? _selectedOption;
   getQuestion() async {
     final questionApi = QuestionsApi();
     Question question = await questionApi.getRandomQuestion(widget.topicId);
     setState(() {
       _question = question;
-      print("question!");
-      print(question.options);
     });
   }
 
@@ -46,10 +45,39 @@ class _QuestionPageState extends State<QuestionPage> {
             margin: EdgeInsets.all(20),
             child: Container(
               child: _question != null
-                  ? Column(children: [
-                      Text('Question: ${_question!.question}'),
-                      for (var option in _question!.options) Text(option)
-                    ])
+                  ? Column(
+                      children: [
+                        Text('Question: ${_question!.question}'),
+                        Column(
+                          children:
+                              _question!.options.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            String option = entry.value;
+
+                            return RadioListTile<int>(
+                              title: Text(option),
+                              value: index,
+                              groupValue: _selectedOption,
+                              onChanged: (int? value) {
+                                setState(() {
+                                  _selectedOption = value;
+                                  print('in set State');
+                                });
+                                if (value != null) {
+                                  String selectedOptionText =
+                                      _question!.options[value];
+                                  print(selectedOptionText);
+                                }
+                              },
+                            );
+                          }).toList(),
+                        ),
+                        ElevatedButton(
+                          child: Text("submit answer"),
+                          onPressed: () => print("TODO functionality"),
+                        )
+                      ],
+                    )
                   : Text('Loading...'),
             )));
   }
