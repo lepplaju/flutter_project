@@ -14,7 +14,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
         title: Text("Quiz Vault"),
         actions: [
           ElevatedButton(
-              onPressed: () => print('button was pressed'),
+              onPressed: () => context.go('/statistics'),
               child: Text('Statistics'))
         ]);
   }
