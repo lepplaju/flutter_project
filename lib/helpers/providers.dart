@@ -20,11 +20,7 @@ final topicProvider = StateNotifierProvider<TopicNotifier, List<Topic>>((ref) {
 });
 
 class QuestionNotifier extends StateNotifier<Question?> {
-  final topicId;
+  final int topicId;
   final questionApi = QuestionsApi();
   QuestionNotifier(this.topicId) : super(null);
-
-  _initialize() async {
-    state = await questionApi.getRandomQuestion(topicId);
-  }
 }

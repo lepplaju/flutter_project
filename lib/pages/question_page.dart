@@ -1,16 +1,12 @@
-import 'dart:math';
-
+import 'package:quiz_application/helpers/shared_pref_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz_application/helpers/questions_api.dart';
-import '../helpers/providers.dart';
-import '../widgets/top_bar.dart';
 import '../helpers/question.dart';
-import '../helpers/questions_api.dart';
 
+// Dynamically show questions based on the id of the topic chosen from the UI.
 class QuestionPage extends StatefulWidget {
   final int topicId;
-  QuestionPage(this.topicId);
+  const QuestionPage(this.topicId, {super.key});
   @override
   State<QuestionPage> createState() => _QuestionPageState();
 }
@@ -20,7 +16,9 @@ class _QuestionPageState extends State<QuestionPage> {
   Question? _question;
   int? _selectedOption;
   String? _selectedOptionText;
+  int? count;
   final questionApi = QuestionsApi();
+
   getQuestion() async {
     Question question = await questionApi.getRandomQuestion(widget.topicId);
     setState(() {
@@ -36,24 +34,30 @@ class _QuestionPageState extends State<QuestionPage> {
   void initState() {
     super.initState();
     getQuestion();
+    count = SharedPrefHelper.getValue();
   }
 
+  // Submit the answer to the question
   answerQuestion() async {
     bool ans = await questionApi.submitAnswer(
         widget.topicId, _question!.id, _selectedOptionText!);
+    if (ans) {
+      await SharedPrefHelper.incrementValue();
+      count = SharedPrefHelper.getValue();
+    }
     _showAnswerFeedback(ans);
     setState(() {
       _answeredCorrectly = ans;
     });
-    // Need to display a red box if the answer is wrong and a green box if the answer is correct
   }
 
+  // Show popup notification after submitting an answer
   _showAnswerFeedback(bool correct) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
-      padding: EdgeInsets.only(bottom: 100.0),
+      padding: const EdgeInsets.only(bottom: 100.0),
       content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -61,62 +65,62 @@ class _QuestionPageState extends State<QuestionPage> {
             Expanded(
                 child: Center(
                     child: Padding(
-                        padding: EdgeInsets.only(top: 25),
+                        padding: const EdgeInsets.only(top: 25),
                         child: Text(
                           correct
-                              ? 'Your answer is correct!'
+                              ? 'Your answer is correct! $count'
                               : 'Your answer is wrong!',
-                          style: TextStyle(fontSize: 25, color: Colors.white),
+                          style: const TextStyle(
+                              fontSize: 25, color: Colors.white),
                         ))))
           ]),
       backgroundColor: correct ? Colors.green : Colors.red,
       elevation: 25,
-      duration: Duration(seconds: 25),
+      duration: const Duration(seconds: 25),
     ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: TopBar(),
-        body: Container(
-            margin: EdgeInsets.all(20),
-            child: Container(
-              child: _question != null
-                  ? Column(
-                      children: [
-                        Text('Question: ${_question!.question}'),
-                        Column(
-                          children:
-                              _question!.options.asMap().entries.map((entry) {
-                            int index = entry.key;
-                            String option = entry.value;
+    return Container(
+        margin: const EdgeInsets.all(20),
+        child: Container(
+          child: _question != null
+              ? Column(
+                  children: [
+                    Text('Question: ${_question!.question}'),
+                    Column(
+                      // Dynamically generate and display the buttons based on the number of options given from the API.
+                      children: _question!.options.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        String option = entry.value;
 
-                            return RadioListTile<int>(
-                              title: Text(option),
-                              value: index,
-                              groupValue: _selectedOption,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  _selectedOption = value;
-                                  _selectedOptionText = option;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                        ElevatedButton(
-                          child: Text("submit answer"),
-                          onPressed: () => answerQuestion(),
-                        ),
-                        if (_answeredCorrectly)
-                          ElevatedButton(
-                            onPressed: () => getQuestion(),
-                            child: Text('Next Question'),
-                          ),
-                      ],
-                    )
-                  : Text('Loading...'),
-            )));
+                        return RadioListTile<int>(
+                          title: Text(option),
+                          value: index,
+                          groupValue: _selectedOption,
+                          onChanged: (int? value) {
+                            setState(() {
+                              // Keep track of the selected option
+                              _selectedOption = value;
+                              _selectedOptionText = option;
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    ElevatedButton(
+                      child: const Text("submit answer"),
+                      onPressed: () => answerQuestion(),
+                    ),
+                    if (_answeredCorrectly)
+                      ElevatedButton(
+                        onPressed: () => getQuestion(),
+                        child: const Text('Next Question'),
+                      ),
+                  ],
+                )
+              : const Text('Loading...'),
+        ));
   }
 }
