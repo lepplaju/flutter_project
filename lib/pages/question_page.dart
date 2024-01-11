@@ -89,6 +89,9 @@ class _QuestionPageState extends State<QuestionPage> {
               ? Column(
                   children: [
                     Text('Question: ${_question!.question}'),
+                    _question!.imagePath != null
+                        ? Image.network(_question!.imagePath!)
+                        : const SizedBox.shrink(),
                     Column(
                       // Dynamically generate and display the buttons based on the number of options given from the API.
                       children: _question!.options.asMap().entries.map((entry) {

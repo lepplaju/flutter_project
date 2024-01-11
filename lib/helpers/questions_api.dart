@@ -6,6 +6,7 @@ class QuestionsApi {
   Future<Question> getRandomQuestion(topicId) async {
     var response = await http.get(
         Uri.parse('https://dad-quiz-api.deno.dev/topics/$topicId/questions'));
+    print(response.body);
     final questionItem = jsonDecode(response.body);
     return Question.fromJson(questionItem);
   }
