@@ -43,8 +43,8 @@ class TopicsDisplayer extends ConsumerWidget {
               child: Center(child: Text(topic.name)),
             )))));
     return Center(
-        child: Column(
-      children: [...items],
-    ));
+        child: topics.isEmpty
+            ? const Text('No topics found.')
+            : Column(children: [...items]));
   }
 }

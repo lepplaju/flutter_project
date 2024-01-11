@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import './question_page.dart';
 import '../widgets/top_bar.dart';
 
+// A class to help implement providerScope and top bar
 class QuestionDisplay extends StatelessWidget {
   final int topicId;
   const QuestionDisplay(this.topicId, {super.key});
