@@ -1,20 +1,30 @@
+import 'package:quiz_application/helpers/topic.dart';
+import 'package:quiz_application/helpers/topics_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // This class will help keep track of the number of questions answered correctly
 class SharedPrefHelper {
   static late SharedPreferences _preferences;
-  static const String _keyCount = 'count';
+  static late List<Topic> _topics;
 
   static Future init() async {
     _preferences = await SharedPreferences.getInstance();
+    _topics = await TopicsApi().getTopics();
   }
 
-  static Future incrementValue() async {
+  static Future incrementValue(int topicId) async {
+    Topic matchingTopic = _topics.firstWhere(
+      (topic) => topic.id == topicId,
+    );
+
     await _preferences.setInt(
-        _keyCount, (_preferences.getInt(_keyCount) ?? 1) + 1);
+        matchingTopic.name, (_preferences.getInt(matchingTopic.name) ?? 0) + 1);
   }
 
-  static int getValue() {
-    return _preferences.getInt(_keyCount) ?? 0;
+  static int getValue(int topicId) {
+    Topic matchingTopic = _topics.firstWhere(
+      (topic) => topic.id == topicId,
+    );
+    return _preferences.getInt(matchingTopic.name) ?? 0;
   }
 }

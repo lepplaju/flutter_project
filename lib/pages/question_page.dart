@@ -34,7 +34,7 @@ class _QuestionPageState extends State<QuestionPage> {
   void initState() {
     super.initState();
     getQuestion();
-    count = SharedPrefHelper.getValue();
+    count = SharedPrefHelper.getValue(widget.topicId);
   }
 
   // Submit the answer to the question
@@ -42,8 +42,8 @@ class _QuestionPageState extends State<QuestionPage> {
     bool ans = await questionApi.submitAnswer(
         widget.topicId, _question!.id, _selectedOptionText!);
     if (ans) {
-      await SharedPrefHelper.incrementValue();
-      count = SharedPrefHelper.getValue();
+      await SharedPrefHelper.incrementValue(widget.topicId);
+      count = SharedPrefHelper.getValue(widget.topicId);
     }
     _showAnswerFeedback(ans);
     setState(() {
