@@ -2,6 +2,7 @@ import 'package:quiz_application/helpers/shared_pref_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_application/helpers/questions_api.dart';
 import '../helpers/question.dart';
+import '../widgets/custom_dialog.dart';
 
 // Dynamically show questions based on the id of the topic chosen from the UI.
 class QuestionPage extends StatefulWidget {
@@ -37,6 +38,11 @@ class _QuestionPageState extends State<QuestionPage> {
     count = SharedPrefHelper.getValue(widget.topicId);
   }
 
+// Show popup notification after submitting an answer
+  showCustomDialog(bool correct) {
+    DialogController().showCustomDialog(context, correct);
+  }
+
   // Submit the answer to the question
   answerQuestion() async {
     bool ans = await questionApi.submitAnswer(
@@ -45,39 +51,11 @@ class _QuestionPageState extends State<QuestionPage> {
       await SharedPrefHelper.incrementValue(widget.topicId);
       count = SharedPrefHelper.getValue(widget.topicId);
     }
-    _showAnswerFeedback(ans);
+    //_showAnswerFeedback(ans);
+    showCustomDialog(ans);
     setState(() {
       _answeredCorrectly = ans;
     });
-  }
-
-  // Show popup notification after submitting an answer
-  _showAnswerFeedback(bool correct) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      behavior: SnackBarBehavior.floating,
-      padding: const EdgeInsets.only(bottom: 100.0),
-      content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-                child: Center(
-                    child: Padding(
-                        padding: const EdgeInsets.only(top: 25),
-                        child: Text(
-                          correct
-                              ? 'Your answer is correct! $count'
-                              : 'Your answer is wrong!',
-                          style: const TextStyle(
-                              fontSize: 25, color: Colors.white),
-                        ))))
-          ]),
-      backgroundColor: correct ? Colors.green : Colors.red,
-      elevation: 25,
-      duration: const Duration(seconds: 25),
-    ));
   }
 
   @override
@@ -89,6 +67,7 @@ class _QuestionPageState extends State<QuestionPage> {
               ? Column(
                   children: [
                     Text('Question: ${_question!.question}'),
+                    // Show the image if there is one
                     _question!.imagePath != null
                         ? Image.network(_question!.imagePath!)
                         : const SizedBox.shrink(),
@@ -112,15 +91,15 @@ class _QuestionPageState extends State<QuestionPage> {
                         );
                       }).toList(),
                     ),
-                    ElevatedButton(
-                      child: const Text("submit answer"),
-                      onPressed: () => answerQuestion(),
-                    ),
-                    if (_answeredCorrectly)
-                      ElevatedButton(
-                        onPressed: () => getQuestion(),
-                        child: const Text('Next Question'),
-                      ),
+                    _answeredCorrectly == false
+                        ? ElevatedButton(
+                            child: const Text("submit answer"),
+                            onPressed: () => answerQuestion(),
+                          )
+                        : ElevatedButton(
+                            onPressed: () => getQuestion(),
+                            child: const Text('Next Question'),
+                          ),
                   ],
                 )
               : const Text('Loading...'),

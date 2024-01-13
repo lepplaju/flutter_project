@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_application/helpers/questions_api.dart';
 import 'package:quiz_application/helpers/shared_pref_helper.dart';
+import 'package:quiz_application/widgets/custom_dialog.dart';
 import '../helpers/question.dart';
 
 class GenericPracticePage extends StatefulWidget {
@@ -30,9 +31,14 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
     });
   }
 
+  showCustomDialog(bool correct) {
+    DialogController().showCustomDialog(context, correct);
+  }
+
   submitAnswer() async {
     bool ans = await questionsApi.submitAnswer(
         currentTopicId!, currentQuestion!.id, _selectedOptionText!);
+    showCustomDialog(ans);
     if (ans) {
       await SharedPrefHelper.incrementValue(currentTopicId!);
     }
@@ -58,7 +64,6 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
                       ? Image.network(currentQuestion!.imagePath!)
                       : const SizedBox.shrink(),
                   Column(
-                    // Dynamically generate and display the buttons based on the number of options given from the API.
                     children:
                         currentQuestion!.options.asMap().entries.map((entry) {
                       int index = entry.key;
@@ -83,7 +88,7 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
                           onPressed: getQuestion, child: Text("Next Question"))
                       : ElevatedButton(
                           child: const Text("submit answer"),
-                          onPressed: () => submitAnswer(),
+                          onPressed: submitAnswer,
                         ),
                 ],
               ));

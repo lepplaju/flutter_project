@@ -21,6 +21,7 @@ class SharedPrefHelper {
         matchingTopic.name, (_preferences.getInt(matchingTopic.name) ?? 0) + 1);
   }
 
+  // Return the number of correcly answered questions for a given topic
   static int getValue(int topicId) {
     Topic matchingTopic = _topics.firstWhere(
       (topic) => topic.id == topicId,
