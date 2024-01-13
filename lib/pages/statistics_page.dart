@@ -10,7 +10,6 @@ class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
 
   // Get each topic and the corresponding number of questions answered correctly related to each topic
-
   Future<Map<String, int>?> loadCounts() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final List<Topic> topics = await TopicsApi().getTopics();

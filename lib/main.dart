@@ -4,6 +4,7 @@ import '../pages/main_page.dart';
 import 'package:go_router/go_router.dart';
 import '../pages/statistics_page.dart';
 import 'helpers/shared_pref_helper.dart';
+import 'pages/generic_practice_displayer.dart';
 
 // Set all the routes here
 final router = GoRouter(
@@ -17,6 +18,10 @@ final router = GoRouter(
     GoRoute(
       path: '/statistics',
       builder: (context, state) => const StatisticsPage(),
+    ),
+    GoRoute(
+      path: '/generic',
+      builder: (context, state) => GenericPracticeDisplayer(),
     )
   ],
 );

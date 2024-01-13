@@ -32,7 +32,7 @@ class TopicsDisplayer extends ConsumerWidget {
     final topics = ref.watch(topicProvider);
 
     final double maxWidth = calculateMaxWidth(topics, context);
-    final items = List<Widget>.from(topics.map((topic) => Padding(
+    final topicButtons = List<Widget>.from(topics.map((topic) => Padding(
         padding: const EdgeInsets.symmetric(
             vertical: 18.0), // Adjusting vertical spacing
         child: ElevatedButton(
@@ -45,6 +45,18 @@ class TopicsDisplayer extends ConsumerWidget {
     return Center(
         child: topics.isEmpty
             ? const Text('No topics found.')
-            : Column(children: [...items]));
+            : Column(children: [
+                ...topicButtons,
+                Padding(
+                    padding: const EdgeInsets.only(
+                        top: 100.0), // Adjusting vertical spacing
+                    child: ElevatedButton(
+                        onPressed: () => context.go('/generic'),
+                        child: SizedBox(
+                            width: maxWidth,
+                            height: 50,
+                            child:
+                                const Center(child: Text("Generic Practice")))))
+              ]));
   }
 }
