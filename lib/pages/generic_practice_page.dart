@@ -31,11 +31,15 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
     });
   }
 
-  showCustomDialog(bool correct) {
+  showCustomDialog(bool? correct) {
     DialogController().showCustomDialog(context, correct);
   }
 
   submitAnswer() async {
+    if (_selectedOption == null) {
+      showCustomDialog(null);
+      return;
+    }
     bool ans = await questionsApi.submitAnswer(
         currentTopicId!, currentQuestion!.id, _selectedOptionText!);
     showCustomDialog(ans);

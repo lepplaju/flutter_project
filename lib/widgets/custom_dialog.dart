@@ -24,10 +24,16 @@ class CustomDialog extends StatelessWidget {
 }
 
 class DialogController {
-  void showCustomDialog(BuildContext context, bool correct) {
+  void showCustomDialog(BuildContext context, bool? correct) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        if (correct == null) {
+          return CustomDialog(
+            title: 'Error!',
+            content: 'Please select an answer!',
+          );
+        }
         return correct
             ? CustomDialog(
                 title: 'Correct!',

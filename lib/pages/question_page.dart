@@ -39,12 +39,16 @@ class _QuestionPageState extends State<QuestionPage> {
   }
 
 // Show popup notification after submitting an answer
-  showCustomDialog(bool correct) {
+  showCustomDialog(bool? correct) {
     DialogController().showCustomDialog(context, correct);
   }
 
   // Submit the answer to the question
   answerQuestion() async {
+    if (_selectedOption == null) {
+      showCustomDialog(null);
+      return;
+    }
     bool ans = await questionApi.submitAnswer(
         widget.topicId, _question!.id, _selectedOptionText!);
     if (ans) {
