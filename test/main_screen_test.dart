@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_application/pages/main_page.dart';
-import 'package:http/http.dart' as http;
 import 'package:nock/nock.dart';
 
 void main() {
@@ -43,8 +42,8 @@ void main() {
 
     final myApp = ProviderScope(child: MaterialApp(home: MainPage()));
     await tester.pumpWidget(myApp);
-    await tester
-        .pump(); // Pump another time to build the TopicsDisplayer widget
+    await tester.pumpAndSettle();
+    // Pump another time to build the TopicsDisplayer widget
     final Finder buttonFinder = find.byType(ElevatedButton);
     final List<ElevatedButton> buttons = tester
         .widgetList(buttonFinder)
@@ -63,8 +62,8 @@ void main() {
     List<dynamic> names =
         content.map((topic) => topic['name'] as String).toList();
 
-    // Five buttons overall (statistics button at the appbar)
-    expect(childWidgets.length, 5);
+    // Six buttons overall (statistics button at the appbar and generic practice button under other topics)
+    expect(childWidgets.length, 6);
     int topicButtonCount = 0;
 
     for (ElevatedButton button in buttons) {
@@ -87,6 +86,7 @@ void main() {
     expect(topicButtonCount, 4);
   });
 
+// Test that the main screen will show a text "no topics found" if there are no topics
   testWidgets('Main page shows text "no topics found" when api returns nothing',
       (tester) async {
     final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
@@ -104,8 +104,3 @@ void main() {
     expect(textFinder, findsOneWidget);
   });
 }
-
-//noTopicsFoundTest();
-
-// Test that the main screen will show a text "no topics found" if there are no topics
-void noTopicsFoundTest() {}

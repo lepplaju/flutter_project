@@ -17,10 +17,12 @@ class QuestionsApi {
             'https://dad-quiz-api.deno.dev/topics/$topicId/questions/$questionId/answers'),
         body: jsonEncode({'answer': answer}),
         headers: {'Content-Type': 'application/json'});
+
     if (response.statusCode != 200) {
       throw Exception('Failed to submit answer');
     }
     Map<String, dynamic> jsonMap = jsonDecode(response.body);
+    print("jsonmap! $jsonMap");
     bool correct = jsonMap['correct'];
     return correct;
   }

@@ -22,6 +22,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   getQuestion() async {
     Question question = await questionApi.getRandomQuestion(widget.topicId);
+    print("topic id here: ${widget.topicId}}");
     setState(() {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       _selectedOption = null;
@@ -45,6 +46,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   // Submit the answer to the question
   answerQuestion() async {
+    print("TEST DEBUG: $_selectedOptionText");
     if (_selectedOption == null) {
       showCustomDialog(null);
       return;
@@ -70,12 +72,15 @@ class _QuestionPageState extends State<QuestionPage> {
           child: _question != null
               ? Column(
                   children: [
-                    Text('Question: ${_question!.question}'),
+                    Text(
+                        key: const Key('question_text'),
+                        '${_question!.question}'),
                     // Show the image if there is one
                     _question!.imagePath != null
                         ? Image.network(_question!.imagePath!)
                         : const SizedBox.shrink(),
                     Column(
+                      key: const Key('button_list'),
                       // Dynamically generate and display the buttons based on the number of options given from the API.
                       children: _question!.options.asMap().entries.map((entry) {
                         int index = entry.key;
@@ -97,6 +102,7 @@ class _QuestionPageState extends State<QuestionPage> {
                     ),
                     _answeredCorrectly == false
                         ? ElevatedButton(
+                            key: Key('submit_button'),
                             child: const Text("submit answer"),
                             onPressed: () => answerQuestion(),
                           )

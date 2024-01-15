@@ -9,6 +9,7 @@ class CustomDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      key: ValueKey('custom_dialog'),
       title: Text(title),
       content: Text(content),
       actions: <Widget>[
