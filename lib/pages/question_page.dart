@@ -36,7 +36,7 @@ class _QuestionPageState extends State<QuestionPage> {
   void initState() {
     super.initState();
     getQuestion();
-    count = SharedPrefHelper.getValue(widget.topicId);
+    //count = SharedPrefHelper.getValue(widget.topicId);
   }
 
 // Show popup notification after submitting an answer

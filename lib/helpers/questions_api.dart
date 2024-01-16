@@ -17,7 +17,7 @@ class QuestionsApi {
             'https://dad-quiz-api.deno.dev/topics/$topicId/questions/$questionId/answers'),
         body: jsonEncode({'answer': answer}),
         headers: {'Content-Type': 'application/json'});
-
+    print(response);
     if (response.statusCode != 200) {
       throw Exception('Failed to submit answer');
     }

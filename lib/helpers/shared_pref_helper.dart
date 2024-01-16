@@ -8,8 +8,8 @@ class SharedPrefHelper {
   static List<Topic>? _topics;
 
   static Future init() async {
-    _preferences = await SharedPreferences.getInstance();
     _topics = await TopicsApi().getTopics();
+    _preferences = await SharedPreferences.getInstance();
   }
 
   static Future incrementValue(int topicId) async {
@@ -23,20 +23,8 @@ class SharedPrefHelper {
 
   // Return the number of correcly answered questions for a given topic
   static int getValue(int topicId) {
-    Topic? matchingTopic;
-    if (_topics == null) {
-      init().then((_) {
-        matchingTopic = _topics!.firstWhere((topic) => topic.id == topicId);
-        return _preferences!.getInt(matchingTopic!.name) ?? 0;
-      });
-    } else {
-      matchingTopic = _topics!.firstWhere(
-        (topic) => topic.id == topicId,
-      );
-      return _preferences!.getInt(matchingTopic!.name) ?? 0;
-    }
-    print('should not reach here');
-    return 0;
+    Topic? matchingTopic = _topics!.firstWhere((topic) => topic.id == topicId);
+    return _preferences!.getInt(matchingTopic!.name) ?? 0;
   }
 
   // Return the topicID with the least number of questions answered correctly

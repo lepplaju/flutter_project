@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nock/nock.dart';
+import 'package:quiz_application/helpers/shared_pref_helper.dart';
 import 'package:quiz_application/pages/question_display.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   final String _baseUrl = 'https://dad-quiz-api.deno.dev';
@@ -93,23 +95,23 @@ void main() {
   testWidgets("Answering gives feedback (both correct and incorrect answers)",
       (tester) async {
     // Override get topics API call
-//    final topic_interceptor =
-//        nock('https://dad-quiz-api.deno.dev').get('/topics')
-//          ..reply(
-//            200,
-//            [
-//              {
-//                "id": 1,
-//                "name": "TestingMock",
-//                "question_path": "/topics/1/questions"
-//              },
-//              {
-//                "id": 2,
-//                "name": "Programming",
-//                "question_path": "/topics/2/questions"
-//              }
-//            ],
-//          );
+    final topic_interceptor =
+        nock('https://dad-quiz-api.deno.dev').get('/topics')
+          ..reply(
+            200,
+            [
+              {
+                "id": 1,
+                "name": "TestingMock",
+                "question_path": "/topics/1/questions"
+              },
+              {
+                "id": 2,
+                "name": "Programming",
+                "question_path": "/topics/2/questions"
+              }
+            ],
+          );
 
     // Override get questions API call
     final question_interceptor =
@@ -125,15 +127,22 @@ void main() {
           );
     // Override submit answer API call
     final answer_interceptor = nock('https://dad-quiz-api.deno.dev')
-        .post('/topics/1/questions/3/answers', {
-      'answer': 'what',
-    })
+        .post('/topics/1/questions/3/answers', {'answer': 'what'})
       ..reply(
-        204,
+        200,
         {
           "correct": true,
         },
-      );
+      )
+      ..onReply(() {
+        print('Closed the interceptor');
+      });
+
+    // Initialize sharedPreferences
+    SharedPreferences.setMockInitialValues({});
+
+    // Initialize the sharedPrefHelper which is normally only called in main (makes the getTopics API call)
+    await SharedPrefHelper.init();
     final myApp = MaterialApp(home: QuestionDisplay(1));
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
@@ -151,6 +160,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(submitButton);
     await tester.pumpAndSettle();
+    await tester.pump();
     final popUpDialog = find.byKey(ValueKey('custom_dialog'));
     expect(popUpDialog, findsOneWidget);
   });
