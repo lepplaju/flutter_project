@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -131,6 +132,17 @@ void main() {
       ..reply(
         200,
         {
+          "correct": false,
+        },
+      )
+      ..onReply(() {
+        print('Closed the interceptor');
+      });
+    final answer_interceptor2 = nock('https://dad-quiz-api.deno.dev')
+        .post('/topics/1/questions/3/answers', {'answer': 'answer'})
+      ..reply(
+        200,
+        {
           "correct": true,
         },
       )
@@ -146,22 +158,48 @@ void main() {
     final myApp = MaterialApp(home: QuestionDisplay(1));
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
-    // await tester.pump();
+
+    // First we answer incorrectly:
     var options = question_interceptor.body['options'];
     print(options);
     var submitButton = find.byKey(ValueKey('submit_button'));
     final buttonParent = find.byKey(ValueKey('button_list'));
     final answerRadioTile =
         find.descendant(of: buttonParent, matching: find.text(options[0]));
-    print(answerRadioTile);
     expect(answerRadioTile, findsOneWidget);
     expect(submitButton, findsOneWidget);
     await tester.tap(answerRadioTile);
     await tester.pumpAndSettle();
     await tester.tap(submitButton);
     await tester.pumpAndSettle();
-    await tester.pump();
     final popUpDialog = find.byKey(ValueKey('custom_dialog'));
     expect(popUpDialog, findsOneWidget);
+    final popUpText = find.text('Wrong!');
+    expect(popUpText, findsOneWidget);
+
+    // -------------------------
+    // Next we test answering correctly:
+
+    final dialogButton = find.text("OK");
+    expect(dialogButton, findsOneWidget);
+    await tester.tap(dialogButton);
+    await tester.pumpAndSettle();
+    final correctAnswerRadioTile =
+        find.descendant(of: buttonParent, matching: find.text(options[3]));
+    expect(correctAnswerRadioTile, findsOneWidget);
+    await tester.tap(correctAnswerRadioTile);
+    await tester.pumpAndSettle();
+    await tester.tap(submitButton);
+    await tester.pumpAndSettle();
+    final popUpDialog2 = find.byKey(ValueKey('custom_dialog'));
+    expect(popUpDialog2, findsOneWidget);
+    final popUpText2 = find.text('Correct!');
+    expect(popUpText2, findsOneWidget);
+
+    // make sure that there is no submit button after closing dialog:
+    final dialogButton2 = find.text("OK");
+    await tester.tap(dialogButton2);
+    await tester.pumpAndSettle();
+    expect(submitButton, findsNothing);
   });
 }
