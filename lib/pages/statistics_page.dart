@@ -50,19 +50,21 @@ class StatisticsPage extends StatelessWidget {
                     body: Center(
                         child: Container(
                             margin: const EdgeInsets.all(20),
-                            child: Column(children: [
-                              counterWidgets.isEmpty
-                                  ? Text("No topics found.")
-                                  : Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                          Text("Correct answer counters:"),
-                                          ...counterWidgets
-                                        ]),
-                              ElevatedButton(
-                                  onPressed: () => context.go('/'),
-                                  child: const Text('go back home'))
-                            ])))));
+                            child: Column(
+                                key: ValueKey('stats_column'),
+                                children: [
+                                  counterWidgets.isEmpty
+                                      ? Text("No topics found.")
+                                      : Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                              Text("Correct answer counters:"),
+                                              ...counterWidgets
+                                            ]),
+                                  ElevatedButton(
+                                      onPressed: () => context.go('/'),
+                                      child: const Text('go back home'))
+                                ])))));
           }
         });
   }
