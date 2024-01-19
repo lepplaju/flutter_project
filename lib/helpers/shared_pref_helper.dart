@@ -12,11 +12,15 @@ class SharedPrefHelper {
     _preferences = await SharedPreferences.getInstance();
   }
 
+  static Future reset() async {
+    await _preferences!.clear();
+  }
+
   static Future incrementValue(int topicId) async {
     Topic matchingTopic = _topics!.firstWhere(
       (topic) => topic.id == topicId,
     );
-
+    await _preferences!.setInt('all', (_preferences!.getInt('all') ?? 0) + 1);
     await _preferences!.setInt(matchingTopic.name,
         (_preferences!.getInt(matchingTopic.name) ?? 0) + 1);
   }

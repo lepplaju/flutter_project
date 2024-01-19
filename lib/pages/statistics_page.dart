@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz_application/helpers/shared_pref_helper.dart';
 import 'package:quiz_application/helpers/topic.dart';
 import 'package:quiz_application/helpers/topics_api.dart';
 import 'package:quiz_application/widgets/top_bar.dart';
@@ -14,6 +15,7 @@ class StatisticsPage extends StatelessWidget {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final List<Topic> topics = await TopicsApi().getTopics();
     Map<String, int> counts = {};
+    counts['all'] = prefs.getInt("all") ?? 0;
     for (Topic topic in topics) {
       counts[topic.name] = prefs.getInt(topic.name) ?? 0;
     }
@@ -63,7 +65,10 @@ class StatisticsPage extends StatelessWidget {
                                             ]),
                                   ElevatedButton(
                                       onPressed: () => context.go('/'),
-                                      child: const Text('go back home'))
+                                      child: const Text('go back home')),
+                                  ElevatedButton(
+                                      onPressed: () => SharedPrefHelper.reset(),
+                                      child: Text("Reset counters"))
                                 ])))));
           }
         });
