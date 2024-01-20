@@ -54,41 +54,62 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
   Widget build(BuildContext context) {
     return Container(
         child: currentQuestion == null
-            ? Column(children: [
-                const Text(
-                    "Pressing the button will give you a question from a topic that you have the least correct answers."),
-                ElevatedButton(
-                    key: const ValueKey('get_question_button'),
-                    onPressed: getQuestion,
-                    child: const Text("get Question"))
-              ])
+            ? Center(
+                child: Container(
+                    width: 300,
+                    child: Column(children: [
+                      const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Text(
+                              style: TextStyle(fontSize: 20),
+                              "Pressing the button will give you a question from a topic that you have the fewest correct answers.")),
+                      ElevatedButton(
+                          key: const ValueKey('get_question_button'),
+                          onPressed: getQuestion,
+                          child: const Text("Get question"))
+                    ])))
             : Column(
                 key: const ValueKey('question_column'),
                 children: [
-                  Text('Question: ${currentQuestion!.question}'),
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Text(
+                        currentQuestion!.question,
+                        style: TextStyle(fontSize: 20),
+                      )),
                   currentQuestion!.imagePath != null
                       ? Image.network(currentQuestion!.imagePath!)
                       : const SizedBox.shrink(),
-                  Column(
-                    children:
-                        currentQuestion!.options.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      String option = entry.value;
+                  Center(
+                    child: Container(
+                      width: 200,
+                      child: currentQuestion != null
+                          ? Column(
+                              children: currentQuestion!.options
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
+                                int index = entry.key;
+                                String option = entry.value;
 
-                      return RadioListTile<int>(
-                        title: Text(option),
-                        value: index,
-                        groupValue: _selectedOption,
-                        onChanged: (int? value) {
-                          setState(() {
-                            // Keep track of the selected option
-                            _selectedOption = value;
-                            _selectedOptionText = option;
-                          });
-                        },
-                      );
-                    }).toList(),
+                                return RadioListTile<int>(
+                                  title: Text(option),
+                                  value: index,
+                                  groupValue: _selectedOption,
+                                  onChanged: (int? value) {
+                                    setState(() {
+                                      // Keep track of the selected option
+                                      _selectedOption = value;
+                                      _selectedOptionText = option;
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                   ),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 20)),
                   _answeredCorrectly
                       ? ElevatedButton(
                           key: const ValueKey('next_question_button'),

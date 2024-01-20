@@ -40,10 +40,17 @@ class StatisticsPage extends StatelessWidget {
             List<Widget> counterWidgets = entries.map((count) {
               return Padding(
                   padding: const EdgeInsets.all(15), // Adjusting padding
-                  child: Text(
-                    "${count.key}: ${count.value}",
-                    style: const TextStyle(fontSize: 18),
-                  ));
+                  child: Row(children: [
+                    Expanded(
+                        child: Text("${count.key}:", textAlign: TextAlign.end)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: Text(
+                      "${count.value}",
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ))
+                  ]));
             }).toList();
 
             return ProviderScope(
@@ -59,10 +66,20 @@ class StatisticsPage extends StatelessWidget {
                                       ? const Text("No topics found.")
                                       : Column(
                                           mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
                                           children: [
                                               const Text(
-                                                  "Correct answer counters:"),
-                                              ...counterWidgets
+                                                "Correct answer counters:",
+                                                style: TextStyle(fontSize: 24),
+                                              ),
+                                              const Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10)),
+                                              ...counterWidgets,
+                                              const Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 25)),
                                             ]),
                                   ElevatedButton(
                                       onPressed: () => context.go('/'),

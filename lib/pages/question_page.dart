@@ -64,51 +64,62 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: const EdgeInsets.all(20),
-        child: Container(
-          child: _question != null
-              ? Column(
-                  children: [
-                    Text(key: const Key('question_text'), _question!.question),
-                    // Show the image if there is one
-                    _question!.imagePath != null
-                        ? Image.network(_question!.imagePath!)
-                        : const SizedBox.shrink(),
-                    Column(
-                      key: const Key('button_list'),
-                      // Dynamically generate and display the buttons based on the number of options given from the API.
-                      children: _question!.options.asMap().entries.map((entry) {
-                        int index = entry.key;
-                        String option = entry.value;
+    return Column(children: [
+      Padding(
+          padding: EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+              style: const TextStyle(fontSize: 25),
+              key: const Key('question_text'),
+              _question != null ? _question!.question : "")),
+      Center(
+          child: Container(
+        width: 200,
+        child: _question != null
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                  // Show the image if there is one
+                  _question!.imagePath != null
+                      ? Image.network(_question!.imagePath!)
+                      : const SizedBox.shrink(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    key: const Key('button_list'),
+                    // Dynamically generate and display the buttons based on the number of options given from the API.
+                    children: _question!.options.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      String option = entry.value;
 
-                        return RadioListTile<int>(
-                          title: Text(option),
-                          value: index,
-                          groupValue: _selectedOption,
-                          onChanged: (int? value) {
-                            setState(() {
-                              // Keep track of the selected option
-                              _selectedOption = value;
-                              _selectedOptionText = option;
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                    _answeredCorrectly == false
-                        ? ElevatedButton(
-                            key: const Key('submit_button'),
-                            child: const Text("submit answer"),
-                            onPressed: () => answerQuestion(),
-                          )
-                        : ElevatedButton(
-                            onPressed: () => getQuestion(),
-                            child: const Text('Next Question'),
-                          ),
-                  ],
-                )
-              : const Text('Loading...'),
-        ));
+                      return RadioListTile<int>(
+                        title: Text(option),
+                        value: index,
+                        groupValue: _selectedOption,
+                        onChanged: (int? value) {
+                          setState(() {
+                            // Keep track of the selected option
+                            _selectedOption = value;
+                            _selectedOptionText = option;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const Padding(padding: EdgeInsets.symmetric(vertical: 25)),
+                  _answeredCorrectly == false
+                      ? ElevatedButton(
+                          key: const Key('submit_button'),
+                          child: const Text("submit answer"),
+                          onPressed: () => answerQuestion(),
+                        )
+                      : ElevatedButton(
+                          onPressed: () => getQuestion(),
+                          child: const Text('Next Question'),
+                        ),
+                ],
+              )
+            : const Text('Loading...'),
+      ))
+    ]);
   }
 }

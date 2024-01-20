@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../pages/statistics_page.dart';
 import 'helpers/shared_pref_helper.dart';
 import 'pages/generic_practice_displayer.dart';
+import 'theme.dart';
 
 // Set all the routes here
 final router = GoRouter(
@@ -34,18 +35,6 @@ Future main() async {
   runApp(MaterialApp.router(
       // handle navigation with go_router
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        radioTheme: RadioThemeData(
-          // Set the colors for radio buttons
-          fillColor: MaterialStateColor.resolveWith(
-            (states) {
-              if (states.contains(MaterialState.selected)) {
-                return Colors.blue;
-              }
-              return Colors.black;
-            },
-          ),
-        ),
-      ),
+      theme: MyTheme().themedata,
       routerConfig: router));
 }

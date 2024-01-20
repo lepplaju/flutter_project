@@ -10,15 +10,18 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-        elevation: 25,
-        backgroundColor: Colors.blue[100],
+        centerTitle: true,
+        shape: Border(bottom: BorderSide(color: Colors.brown[300]!, width: 2)),
+        backgroundColor: Colors.blue[200],
         leading: IconButton(
             icon: const Icon(Icons.home), onPressed: () => context.go('/')),
         title: const Text("Quiz Vault"),
         actions: [
-          ElevatedButton(
-              onPressed: () => context.go('/statistics'),
-              child: const Text('Statistics'))
+          Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: ElevatedButton(
+                  onPressed: () => context.go('/statistics'),
+                  child: const Text('Statistics')))
         ]);
   }
 }
