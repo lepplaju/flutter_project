@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class CustomDialog extends StatelessWidget {
   final String title;
   final String content;
+  Color? color;
 
-  CustomDialog({required this.title, required this.content});
+  CustomDialog({required this.title, required this.content, this.color});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: color ?? Colors.white,
       key: ValueKey('custom_dialog'),
       title: Text(title),
       content: Text(content),
@@ -39,10 +41,12 @@ class DialogController {
             ? CustomDialog(
                 title: 'Correct!',
                 content: 'You can move on to the next question',
+                color: Colors.green,
               )
             : CustomDialog(
                 title: 'Wrong!',
                 content: 'Try again',
+                color: Colors.red,
               );
       },
     );
