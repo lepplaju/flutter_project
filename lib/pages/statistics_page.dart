@@ -48,19 +48,20 @@ class StatisticsPage extends StatelessWidget {
 
             return ProviderScope(
                 child: Scaffold(
-                    appBar: TopBar(),
+                    appBar: const TopBar(),
                     body: Center(
                         child: Container(
                             margin: const EdgeInsets.all(20),
                             child: Column(
-                                key: ValueKey('stats_column'),
+                                key: const ValueKey('stats_column'),
                                 children: [
                                   counterWidgets.isEmpty
-                                      ? Text("No topics found.")
+                                      ? const Text("No topics found.")
                                       : Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                              Text("Correct answer counters:"),
+                                              const Text(
+                                                  "Correct answer counters:"),
                                               ...counterWidgets
                                             ]),
                                   ElevatedButton(
@@ -68,7 +69,7 @@ class StatisticsPage extends StatelessWidget {
                                       child: const Text('go back home')),
                                   ElevatedButton(
                                       onPressed: () => SharedPrefHelper.reset(),
-                                      child: Text("Reset counters"))
+                                      child: const Text("Reset counters"))
                                 ])))));
           }
         });

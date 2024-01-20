@@ -1,8 +1,4 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nock/nock.dart';
 import 'package:quiz_application/helpers/shared_pref_helper.dart';
@@ -10,7 +6,6 @@ import 'package:quiz_application/pages/question_display.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  final String _baseUrl = 'https://dad-quiz-api.deno.dev';
   setUpAll(() {
     nock.init();
   });
@@ -23,6 +18,7 @@ void main() {
   testWidgets("Question text and the answer options from the API are shown",
       (tester) async {
     // We need to mock the getTopics API call
+    // ignore: unused_local_variable
     final interceptor2 = nock('https://dad-quiz-api.deno.dev').get('/topics')
       ..reply(
         200,
@@ -51,10 +47,10 @@ void main() {
               "answer_post_path": "/topics/1/questions/3/answers"
             },
           );
-    final myApp = MaterialApp(home: QuestionDisplay(1));
+    const myApp = MaterialApp(home: QuestionDisplay(1));
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
-    final questionWidget = find.byKey(ValueKey('question_text'));
+    final questionWidget = find.byKey(const ValueKey('question_text'));
     final textWidget = tester.widget<Text>(questionWidget);
     expect(textWidget.data, 'this is just a test');
     expect(questionWidget, findsOneWidget);
@@ -77,7 +73,7 @@ void main() {
     expect(childWidgets.length, 2);
 
     // Find all the radioTiles/radioButtons
-    final buttonParent = find.byKey(ValueKey('button_list'));
+    final buttonParent = find.byKey(const ValueKey('button_list'));
     expect(buttonParent, findsOneWidget);
     final radioTileFinder = find.descendant(
         of: buttonParent, matching: find.byType(RadioListTile<int>));
@@ -93,7 +89,8 @@ void main() {
   testWidgets("Answering gives feedback (both correct and incorrect answers)",
       (tester) async {
     // Override get topics API call
-    final topic_interceptor =
+    // ignore: unused_local_variable
+    final topicInterceptor =
         nock('https://dad-quiz-api.deno.dev').get('/topics')
           ..reply(
             200,
@@ -112,7 +109,7 @@ void main() {
           );
 
     // Override get questions API call
-    final question_interceptor =
+    final questionInterceptor =
         nock('https://dad-quiz-api.deno.dev').get('/topics/1/questions')
           ..reply(
             200,
@@ -124,7 +121,8 @@ void main() {
             },
           );
     // Override wrong answer API call
-    final answer_interceptor = nock('https://dad-quiz-api.deno.dev')
+    // ignore: unused_local_variable
+    final answerInterceptor = nock('https://dad-quiz-api.deno.dev')
         .post('/topics/1/questions/3/answers', {'answer': 'what'})
       ..reply(
         200,
@@ -132,12 +130,11 @@ void main() {
           "correct": false,
         },
       )
-      ..onReply(() {
-        print('Closed the interceptor');
-      });
+      ..onReply(() {});
 
     // Override correct answer API call
-    final answer_interceptor2 = nock('https://dad-quiz-api.deno.dev')
+    // ignore: unused_local_variable
+    final answerInterceptor2 = nock('https://dad-quiz-api.deno.dev')
         .post('/topics/1/questions/3/answers', {'answer': 'answer'})
       ..reply(
         200,
@@ -145,24 +142,21 @@ void main() {
           "correct": true,
         },
       )
-      ..onReply(() {
-        print('Closed the interceptor');
-      });
+      ..onReply(() {});
 
     // Initialize sharedPreferences
     SharedPreferences.setMockInitialValues({});
 
     // Initialize the sharedPrefHelper which is normally only called in main (makes the getTopics API call)
     await SharedPrefHelper.init();
-    final myApp = MaterialApp(home: QuestionDisplay(1));
+    const myApp = MaterialApp(home: QuestionDisplay(1));
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
 
     // First we answer a question incorrectly:
-    var options = question_interceptor.body['options'];
-    print(options);
-    var submitButton = find.byKey(ValueKey('submit_button'));
-    final buttonParent = find.byKey(ValueKey('button_list'));
+    var options = questionInterceptor.body['options'];
+    var submitButton = find.byKey(const ValueKey('submit_button'));
+    final buttonParent = find.byKey(const ValueKey('button_list'));
     final answerRadioTile =
         find.descendant(of: buttonParent, matching: find.text(options[0]));
     expect(answerRadioTile, findsOneWidget);
@@ -171,7 +165,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(submitButton);
     await tester.pumpAndSettle();
-    final popUpDialog = find.byKey(ValueKey('custom_dialog'));
+    final popUpDialog = find.byKey(const ValueKey('custom_dialog'));
     expect(popUpDialog, findsOneWidget);
 
     // Check that the popup-dialog text is what it should be:
@@ -192,7 +186,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(submitButton);
     await tester.pumpAndSettle();
-    final popUpDialog2 = find.byKey(ValueKey('custom_dialog'));
+    final popUpDialog2 = find.byKey(const ValueKey('custom_dialog'));
     expect(popUpDialog2, findsOneWidget);
     final popUpText2 = find.text('Correct!');
     expect(popUpText2, findsOneWidget);

@@ -28,7 +28,7 @@ class SharedPrefHelper {
   // Return the number of correcly answered questions for a given topic
   static int getValue(int topicId) {
     Topic? matchingTopic = _topics!.firstWhere((topic) => topic.id == topicId);
-    return _preferences!.getInt(matchingTopic!.name) ?? 0;
+    return _preferences!.getInt(matchingTopic.name) ?? 0;
   }
 
   // Return the number value from a given key directly
@@ -39,16 +39,15 @@ class SharedPrefHelper {
   // Return the topicID with the least number of questions answered correctly
   static int getMinimumValue() {
     //List<String> names = _topics.map((topic) => topic.name).toList();
-    int min_value = _preferences!.getInt(_topics![0].name) ?? 0;
-    int id_with_min_value = _topics![0].id;
+    int minValue = _preferences!.getInt(_topics![0].name) ?? 0;
+    int idWithMinValue = _topics![0].id;
     for (Topic topic in _topics!) {
       int temp = _preferences!.getInt(topic.name) ?? 0;
-      print("${topic.name}: ${topic.id}: $temp");
-      if (temp < min_value) {
-        min_value = temp;
-        id_with_min_value = topic.id;
+      if (temp < minValue) {
+        minValue = temp;
+        idWithMinValue = topic.id;
       }
     }
-    return id_with_min_value;
+    return idWithMinValue;
   }
 }

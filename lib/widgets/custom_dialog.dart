@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 class CustomDialog extends StatelessWidget {
   final String title;
   final String content;
-  Color? color;
+  final Color? color;
 
-  CustomDialog({required this.title, required this.content, this.color});
+  const CustomDialog(
+      {super.key, required this.title, required this.content, this.color});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: color ?? Colors.white,
-      key: ValueKey('custom_dialog'),
+      key: const ValueKey('custom_dialog'),
       title: Text(title),
       content: Text(content),
       actions: <Widget>[
@@ -19,7 +20,7 @@ class CustomDialog extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop(); // Close the dialog
           },
-          child: Text('OK'),
+          child: const Text('OK'),
         ),
       ],
     );
@@ -32,18 +33,18 @@ class DialogController {
       context: context,
       builder: (BuildContext context) {
         if (correct == null) {
-          return CustomDialog(
+          return const CustomDialog(
             title: 'Error!',
             content: 'Please select an answer!',
           );
         }
         return correct
-            ? CustomDialog(
+            ? const CustomDialog(
                 title: 'Correct!',
                 content: 'You can move on to the next question',
                 color: Colors.green,
               )
-            : CustomDialog(
+            : const CustomDialog(
                 title: 'Wrong!',
                 content: 'Try again',
                 color: Colors.red,

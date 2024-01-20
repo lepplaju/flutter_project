@@ -5,7 +5,6 @@ import 'package:quiz_application/pages/main_page.dart';
 import 'package:nock/nock.dart';
 
 void main() {
-  final String _baseUrl = 'https://dad-quiz-api.deno.dev';
   setUpAll(() {
     nock.init();
   });
@@ -40,7 +39,7 @@ void main() {
         ],
       );
 
-    final myApp = ProviderScope(child: MaterialApp(home: MainPage()));
+    const myApp = ProviderScope(child: MaterialApp(home: MainPage()));
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
     // Pump another time to build the TopicsDisplayer widget
@@ -74,7 +73,6 @@ void main() {
         if (childWidget2 is Center) {
           Widget? childWidget3 = childWidget2.child as Text;
           if (childWidget3 is Text) {
-            print("button text: ${childWidget3.data}");
             if (names.contains(childWidget3.data)) {
               topicButtonCount += 1;
             }
@@ -89,9 +87,10 @@ void main() {
 // Test that the main screen will show a text "no topics found" if there are no topics
   testWidgets('Main page shows text "no topics found" when api returns nothing',
       (tester) async {
+    // ignore: unused_local_variable
     final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
       ..reply(200, []);
-    final myApp = ProviderScope(child: MaterialApp(home: MainPage()));
+    const myApp = ProviderScope(child: MaterialApp(home: MainPage()));
     await tester.pumpWidget(myApp);
     await tester.pump();
     final Finder buttonFinder = find.byType(ElevatedButton);

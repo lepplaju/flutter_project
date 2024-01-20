@@ -8,7 +8,7 @@ class GenericPracticePage extends StatefulWidget {
   const GenericPracticePage({Key? key}) : super(key: key);
 
   @override
-  _GenericPracticePageState createState() => _GenericPracticePageState();
+  State<GenericPracticePage> createState() => _GenericPracticePageState();
 }
 
 class _GenericPracticePageState extends State<GenericPracticePage> {
@@ -21,7 +21,6 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
 
   getQuestion() async {
     currentTopicId = SharedPrefHelper.getMinimumValue();
-    print("Getting the question... from Topicid: $currentTopicId");
     Question question = await questionsApi.getRandomQuestion(currentTopicId);
     setState(() {
       _answeredCorrectly = false;
@@ -56,15 +55,15 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
     return Container(
         child: currentQuestion == null
             ? Column(children: [
-                Text(
+                const Text(
                     "Pressing the button will give you a question from a topic that you have the least correct answers."),
                 ElevatedButton(
-                    key: ValueKey('get_question_button'),
+                    key: const ValueKey('get_question_button'),
                     onPressed: getQuestion,
-                    child: Text("get Question"))
+                    child: const Text("get Question"))
               ])
             : Column(
-                key: ValueKey('question_column'),
+                key: const ValueKey('question_column'),
                 children: [
                   Text('Question: ${currentQuestion!.question}'),
                   currentQuestion!.imagePath != null
@@ -92,13 +91,13 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
                   ),
                   _answeredCorrectly
                       ? ElevatedButton(
-                          key: ValueKey('next_question_button'),
+                          key: const ValueKey('next_question_button'),
                           onPressed: getQuestion,
-                          child: Text("Next Question"))
+                          child: const Text("Next Question"))
                       : ElevatedButton(
-                          key: ValueKey('submit_answer_button'),
-                          child: const Text("submit answer"),
+                          key: const ValueKey('submit_answer_button'),
                           onPressed: submitAnswer,
+                          child: const Text("submit answer"),
                         ),
                 ],
               ));

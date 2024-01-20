@@ -21,7 +21,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/generic',
-      builder: (context, state) => GenericPracticeDisplayer(),
+      builder: (context, state) => const GenericPracticeDisplayer(),
     )
   ],
 );

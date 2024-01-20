@@ -14,6 +14,7 @@ void main() {
   });
   testWidgets("Total correct count matches with sharedpreferences",
       (tester) async {
+    // ignore: unused_local_variable
     final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
       ..reply(
         200,
@@ -33,7 +34,7 @@ void main() {
         ],
       );
 
-    final myApp = MaterialApp(home: StatisticsPage());
+    const myApp = MaterialApp(home: StatisticsPage());
     SharedPreferences.setMockInitialValues({
       'fun facts': 1,
       'movies': 2,
@@ -92,11 +93,11 @@ void main() {
       'all': 10
     });
 
-    final myApp = MaterialApp(home: StatisticsPage());
+    const myApp = MaterialApp(home: StatisticsPage());
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
     await tester.pump();
-    var statsContainer = find.byKey(ValueKey('stats_column'));
+    var statsContainer = find.byKey(const ValueKey('stats_column'));
     expect(statsContainer, findsOneWidget);
     final statsColumn =
         find.descendant(of: statsContainer, matching: find.byType(Column));
@@ -110,9 +111,8 @@ void main() {
     var idsAndKeys =
         interceptor.body.map((topic) => [topic['id'], topic['name']]).toList();
     //print(idsAndKeys[0]);
-    var keyId;
+    dynamic keyId;
     int count = 0;
-    print('list starts here');
     for (var mytextWidget in statsTextsList) {
       Text textWidget = mytextWidget as Text;
       var keyAndValue = textWidget.data!.split(':');
@@ -122,7 +122,6 @@ void main() {
       if (keyId != null) {
         // only go here if we match text from sharedPref and the screen
         count++;
-        print("$keyId $keyAndValue");
         expect(keyId[0], int.parse(keyAndValue[1].trim()));
         // Here we check that the numbers in SharedPreferences and the screen are the same.
       }

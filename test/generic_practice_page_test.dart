@@ -36,7 +36,8 @@ void main() {
       );
 
     // This api call should happen when we fetch the first question (since topic with id 3 has the fewest correct answers)
-    final question_interceptor =
+    // ignore: unused_local_variable
+    final questionInterceptor =
         nock('https://dad-quiz-api.deno.dev').get('/topics/3/questions')
           ..reply(
             200,
@@ -47,8 +48,8 @@ void main() {
               "answer_post_path": "/topics/3/questions/3/answers"
             },
           );
-
-    final question_interceptor_2 =
+    // ignore: unused_local_variable
+    final questionInterceptor2 =
         nock('https://dad-quiz-api.deno.dev').get('/topics/2/questions')
           ..reply(
             200,
@@ -60,7 +61,8 @@ void main() {
             },
           );
 
-    final answer_interceptor = nock('https://dad-quiz-api.deno.dev')
+    // ignore: unused_local_variable
+    final answerInterceptor = nock('https://dad-quiz-api.deno.dev')
         .post('/topics/3/questions/3/answers', {'answer': 'correct'})
       ..reply(
         200,
@@ -68,9 +70,7 @@ void main() {
           "correct": true,
         },
       )
-      ..onReply(() {
-        print('Closed the interceptor');
-      });
+      ..onReply(() {});
     SharedPreferences.setMockInitialValues({
       'fun facts': 4,
       'movies': 3,
@@ -80,17 +80,17 @@ void main() {
     });
     await SharedPrefHelper.init();
 
-    final myApp = MaterialApp(home: GenericPracticeDisplayer());
+    const myApp = MaterialApp(home: GenericPracticeDisplayer());
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
     // The initial generic_practice_page is just information about what is going to happen. We need to press a button to proceed to the question
-    var buttonFinder = find.byKey(ValueKey("get_question_button"));
+    var buttonFinder = find.byKey(const ValueKey("get_question_button"));
     expect(buttonFinder, findsOneWidget);
     await tester.tap(buttonFinder);
     await tester.pumpAndSettle();
     // Now we should be on the question page
 
-    var questionColumn = find.byKey(ValueKey("question_column"));
+    var questionColumn = find.byKey(const ValueKey("question_column"));
     expect(questionColumn, findsOneWidget);
     final questionText = find.descendant(
         of: questionColumn,
@@ -101,12 +101,12 @@ void main() {
     expect(answerRadioTile, findsOneWidget);
     await tester.tap(answerRadioTile);
     await tester.pumpAndSettle();
-    var submitButtonFinder = find.byKey(ValueKey("submit_answer_button"));
+    var submitButtonFinder = find.byKey(const ValueKey("submit_answer_button"));
     expect(submitButtonFinder, findsOneWidget);
     await tester.tap(submitButtonFinder);
     await tester.pumpAndSettle();
     await tester.pump();
-    final popUpDialog = find.byKey(ValueKey('custom_dialog'));
+    final popUpDialog = find.byKey(const ValueKey('custom_dialog'));
     expect(popUpDialog, findsOneWidget);
     final popUpText = find.descendant(
         of: popUpDialog,
@@ -124,10 +124,10 @@ void main() {
     // close dialog
     await tester.tap(okButton);
     await tester.pumpAndSettle();
-    var next_question_button = find.byKey(ValueKey("next_question_button"));
+    var nextQuestionButton = find.byKey(const ValueKey("next_question_button"));
 
     // fetch new question
-    await tester.tap(next_question_button);
+    await tester.tap(nextQuestionButton);
     await tester.pumpAndSettle();
 
     // Now we should be back on the generic_practice_page, this time with a question from another category:
