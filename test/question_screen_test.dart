@@ -19,6 +19,7 @@ void main() {
     nock.cleanAll();
   });
 
+  // Testing that the question text and the answer options from the API are shown
   testWidgets("Question text and the answer options from the API are shown",
       (tester) async {
     // We need to mock the getTopics API call
@@ -38,8 +39,7 @@ void main() {
           }
         ],
       );
-// 'https://dad-quiz-api.deno.dev/topics/$topicId/questions'
-// Then we can mock the second API call
+// Then we can mock the second API call that gets the questions
     final interceptor =
         nock('https://dad-quiz-api.deno.dev').get('/topics/1/questions')
           ..reply(
@@ -51,18 +51,15 @@ void main() {
               "answer_post_path": "/topics/1/questions/3/answers"
             },
           );
-    print(interceptor.body);
     final myApp = MaterialApp(home: QuestionDisplay(1));
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
-    //await tester.pump();
-    //await Future.delayed(Duration(seconds: 5));
-    //final questionWidget = find.text('this is just a test');
     final questionWidget = find.byKey(ValueKey('question_text'));
     final textWidget = tester.widget<Text>(questionWidget);
-    //print(textWidget.data);
     expect(textWidget.data, 'this is just a test');
     expect(questionWidget, findsOneWidget);
+
+    // Find all the buttons
     final Finder buttonFinder = find.byType(ElevatedButton);
     final List<ElevatedButton> buttons = tester
         .widgetList(buttonFinder)
@@ -76,10 +73,10 @@ void main() {
         childWidgets.add(childWidget);
       }
     }
-    // There are two buttons on the screen: in the topBar and the submit button
+    // There should be two buttons on the screen: in the topBar and the submit button
     expect(childWidgets.length, 2);
 
-    // Find all the radioTiles
+    // Find all the radioTiles/radioButtons
     final buttonParent = find.byKey(ValueKey('button_list'));
     expect(buttonParent, findsOneWidget);
     final radioTileFinder = find.descendant(
@@ -92,7 +89,7 @@ void main() {
     expect(radioTiles.length, options.length);
   });
 
-  // Answering gives feedback (both correct and incorrect answers)
+  // Answering gives a dialog feedback (testing both correct and incorrect answers)
   testWidgets("Answering gives feedback (both correct and incorrect answers)",
       (tester) async {
     // Override get topics API call
@@ -126,7 +123,7 @@ void main() {
               "answer_post_path": "/topics/1/questions/3/answers"
             },
           );
-    // Override submit answer API call
+    // Override wrong answer API call
     final answer_interceptor = nock('https://dad-quiz-api.deno.dev')
         .post('/topics/1/questions/3/answers', {'answer': 'what'})
       ..reply(
@@ -138,6 +135,8 @@ void main() {
       ..onReply(() {
         print('Closed the interceptor');
       });
+
+    // Override correct answer API call
     final answer_interceptor2 = nock('https://dad-quiz-api.deno.dev')
         .post('/topics/1/questions/3/answers', {'answer': 'answer'})
       ..reply(
@@ -159,7 +158,7 @@ void main() {
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
 
-    // First we answer incorrectly:
+    // First we answer a question incorrectly:
     var options = question_interceptor.body['options'];
     print(options);
     var submitButton = find.byKey(ValueKey('submit_button'));
@@ -174,12 +173,14 @@ void main() {
     await tester.pumpAndSettle();
     final popUpDialog = find.byKey(ValueKey('custom_dialog'));
     expect(popUpDialog, findsOneWidget);
+
+    // Check that the popup-dialog text is what it should be:
     final popUpText = find.text('Wrong!');
     expect(popUpText, findsOneWidget);
 
     // -------------------------
-    // Next we test answering correctly:
 
+    // Next we test that a correct answer gives appropriate popup-dialog:
     final dialogButton = find.text("OK");
     expect(dialogButton, findsOneWidget);
     await tester.tap(dialogButton);

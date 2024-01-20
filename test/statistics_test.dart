@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nock/nock.dart';
-import 'package:quiz_application/helpers/shared_pref_helper.dart';
 import 'package:quiz_application/pages/statistics_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,6 +12,47 @@ void main() {
   setUp(() {
     nock.cleanAll();
   });
+  testWidgets("Total correct count matches with sharedpreferences",
+      (tester) async {
+    final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
+      ..reply(
+        200,
+        [
+          {
+            "id": 1,
+            "name": "fun facts",
+            "question_path": "/topics/1/questions"
+          },
+          {"id": 2, "name": "movies", "question_path": "/topics/2/questions"},
+          {"id": 3, "name": "games", "question_path": "/topics/3/questions"},
+          {
+            "id": 4,
+            "name": "Miscellaneous",
+            "question_path": "/topics/4/questions"
+          }
+        ],
+      );
+
+    final myApp = MaterialApp(home: StatisticsPage());
+    SharedPreferences.setMockInitialValues({
+      'fun facts': 1,
+      'movies': 2,
+      'games': 1,
+      'Miscellaneous': 1,
+      'all': 5
+    });
+
+    await tester.pumpWidget(myApp);
+    await tester.pumpAndSettle();
+    final SharedPreferences testPrefs = await SharedPreferences.getInstance();
+    var totalCount = testPrefs.getInt('all');
+    await tester.pump();
+
+    var allCountText = find.text('all: 5');
+    expect(allCountText, findsOneWidget);
+    expect(totalCount, 5);
+  });
+
   testWidgets("Statistics page shows correct amount of answered questions",
       (tester) async {
     final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
@@ -49,6 +89,7 @@ void main() {
       'movies': 2,
       'games': 3,
       'Miscellaneous': 4,
+      'all': 10
     });
 
     final myApp = MaterialApp(home: StatisticsPage());

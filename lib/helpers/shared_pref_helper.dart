@@ -31,6 +31,11 @@ class SharedPrefHelper {
     return _preferences!.getInt(matchingTopic!.name) ?? 0;
   }
 
+  // Return the number value from a given key directly
+  static int getValueByKey(String prefKey) {
+    return _preferences!.getInt(prefKey) ?? 0;
+  }
+
   // Return the topicID with the least number of questions answered correctly
   static int getMinimumValue() {
     //List<String> names = _topics.map((topic) => topic.name).toList();

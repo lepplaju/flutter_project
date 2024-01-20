@@ -57,11 +57,14 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
         child: currentQuestion == null
             ? Column(children: [
                 Text(
-                    "Get a question from the topic that the user has the least correct answers."),
+                    "Pressing the button will give you a question from a topic that you have the least correct answers."),
                 ElevatedButton(
-                    onPressed: getQuestion, child: Text("get Question"))
+                    key: ValueKey('get_question_button'),
+                    onPressed: getQuestion,
+                    child: Text("get Question"))
               ])
             : Column(
+                key: ValueKey('question_column'),
                 children: [
                   Text('Question: ${currentQuestion!.question}'),
                   currentQuestion!.imagePath != null
@@ -91,6 +94,7 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
                       ? ElevatedButton(
                           onPressed: getQuestion, child: Text("Next Question"))
                       : ElevatedButton(
+                          key: ValueKey('submit_answer_button'),
                           child: const Text("submit answer"),
                           onPressed: submitAnswer,
                         ),
