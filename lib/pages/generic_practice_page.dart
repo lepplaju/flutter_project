@@ -92,7 +92,9 @@ class _GenericPracticePageState extends State<GenericPracticePage> {
                   ),
                   _answeredCorrectly
                       ? ElevatedButton(
-                          onPressed: getQuestion, child: Text("Next Question"))
+                          key: ValueKey('next_question_button'),
+                          onPressed: getQuestion,
+                          child: Text("Next Question"))
                       : ElevatedButton(
                           key: ValueKey('submit_answer_button'),
                           child: const Text("submit answer"),
