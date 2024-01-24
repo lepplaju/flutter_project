@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nock/nock.dart';
@@ -49,12 +51,17 @@ void main() {
     var totalCount = testPrefs.getInt('all');
     await tester.pump();
 
-    var allCountText = find.text('all: 5');
-    expect(allCountText, findsOneWidget);
+    // Making sure that the total count is the same on screen as on the shared preferences
+    var allText = find.text('all:');
+    var allCountWidget = find.byKey(const ValueKey('topic_value_all'));
+    var allCountText = tester.widget<Text>(allCountWidget).data;
+    expect(allCountText, '5');
+    expect(allText, findsOneWidget);
     expect(totalCount, 5);
   });
 
-  testWidgets("Statistics page shows correct amount of answered questions",
+  testWidgets(
+      "Statistics page shows correct amount of answered questions for each topic",
       (tester) async {
     final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
       ..reply(
@@ -75,15 +82,6 @@ void main() {
         ],
       );
 
-/*
-    List<dynamic> names =
-        interceptor.body.map((topic) => topic['name'] as String).toList();
-    print(names);
-    Map<String, dynamic> sharedPrefMockVals = {};
-    for (int i = 0; i < names.length; i++) {
-      sharedPrefMockVals['${names[i]}'] = 1 + i;
-    }
-    */
     // Setting the shared preferences to have some values
     SharedPreferences.setMockInitialValues({
       'fun facts': 1,
@@ -102,26 +100,36 @@ void main() {
     final statsColumn =
         find.descendant(of: statsContainer, matching: find.byType(Column));
     expect(statsColumn, findsOneWidget);
-    final statsTexts =
-        find.descendant(of: statsColumn, matching: find.byType(Text));
-    //print(statsTexts);
-    final statsTextsList = tester.widgetList(statsTexts);
-    //print(statsTextsList);
+    final statsRows =
+        find.descendant(of: statsColumn, matching: find.byType(Row));
+    final statsRowsList = tester.widgetList(statsRows);
+    expect(statsRowsList.length, 5);
 
     var idsAndKeys =
         interceptor.body.map((topic) => [topic['id'], topic['name']]).toList();
-    //print(idsAndKeys[0]);
     dynamic keyId;
     int count = 0;
-    for (var mytextWidget in statsTextsList) {
-      Text textWidget = mytextWidget as Text;
-      var keyAndValue = textWidget.data!.split(':');
+
+    // Here we find all the text fields that display the number of correctly answered questions for each topic
+    for (var rowItem in statsRowsList) {
+      Row rowWidget = rowItem as Row;
+      List<Expanded> expandedWidgets =
+          rowWidget.children.whereType<Expanded>().toList();
+      List<Text> textWidgets = [];
+      for (var expanded in expandedWidgets) {
+        Text textWidget = expanded.child as Text;
+        textWidgets.add(textWidget);
+      }
+      var keyAndValue =
+          textWidgets.map((text) => text.data!.replaceAll(':', '')).toList();
+
       keyId = idsAndKeys.firstWhere(
           (item) => (item as List<dynamic>)[1] == keyAndValue[0],
           orElse: () => null);
       if (keyId != null) {
         // only go here if we match text from sharedPref and the screen
         count++;
+        // Here we check that each displayed count is the same as in SharedPreferences
         expect(keyId[0], int.parse(keyAndValue[1].trim()));
         // Here we check that the numbers in SharedPreferences and the screen are the same.
       }

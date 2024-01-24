@@ -40,12 +40,17 @@ class StatisticsPage extends StatelessWidget {
             List<Widget> counterWidgets = entries.map((count) {
               return Padding(
                   padding: const EdgeInsets.all(15), // Adjusting padding
-                  child: Row(children: [
+                  child:
+                      Row(key: ValueKey('topic_row_${count.key}'), children: [
                     Expanded(
-                        child: Text("${count.key}:", textAlign: TextAlign.end)),
+                        child: Text(
+                            key: ValueKey('topic_text_${count.key}'),
+                            "${count.key}:",
+                            textAlign: TextAlign.end)),
                     const SizedBox(width: 10),
                     Expanded(
                         child: Text(
+                      key: ValueKey('topic_value_${count.key}'),
                       "${count.value}",
                       textAlign: TextAlign.left,
                       style: const TextStyle(fontWeight: FontWeight.bold),

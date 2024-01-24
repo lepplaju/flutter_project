@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MyTheme {
   ThemeData themedata = ThemeData(
     // scaffold background color
-    scaffoldBackgroundColor: Colors.black12,
+    scaffoldBackgroundColor: Colors.brown[100],
     radioTheme: RadioThemeData(
       // Set the colors for radio buttons
       fillColor: MaterialStateColor.resolveWith(
