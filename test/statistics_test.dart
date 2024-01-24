@@ -1,13 +1,16 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nock/nock.dart';
 import 'package:quiz_application/pages/statistics_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   setUpAll(() {
+    var baseUrl = dotenv.env['API_BASE_URL']!;
+    nock.defaultBase = baseUrl;
     nock.init();
   });
 
@@ -17,7 +20,7 @@ void main() {
   testWidgets("Total correct count matches with sharedpreferences",
       (tester) async {
     // ignore: unused_local_variable
-    final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
+    final interceptor = nock.get('/topics')
       ..reply(
         200,
         [
@@ -63,7 +66,7 @@ void main() {
   testWidgets(
       "Statistics page shows correct amount of answered questions for each topic",
       (tester) async {
-    final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
+    final interceptor = nock.get('/topics')
       ..reply(
         200,
         [

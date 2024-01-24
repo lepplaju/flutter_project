@@ -4,9 +4,14 @@ import 'package:nock/nock.dart';
 import 'package:quiz_application/helpers/shared_pref_helper.dart';
 import 'package:quiz_application/pages/question_display.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   setUpAll(() {
+    var baseUrl = dotenv.env['API_BASE_URL']!;
+    nock.defaultBase = baseUrl;
     nock.init();
   });
 
@@ -19,7 +24,7 @@ void main() {
       (tester) async {
     // We need to mock the getTopics API call
     // ignore: unused_local_variable
-    final interceptor2 = nock('https://dad-quiz-api.deno.dev').get('/topics')
+    final interceptor2 = nock.get('/topics')
       ..reply(
         200,
         [
@@ -36,17 +41,16 @@ void main() {
         ],
       );
 // Then we can mock the second API call that gets the questions
-    final interceptor =
-        nock('https://dad-quiz-api.deno.dev').get('/topics/1/questions')
-          ..reply(
-            200,
-            {
-              "id": 3,
-              "question": "this is just a test",
-              "options": ["what", "is", "the", "answer"],
-              "answer_post_path": "/topics/1/questions/3/answers"
-            },
-          );
+    final interceptor = nock.get('/topics/1/questions')
+      ..reply(
+        200,
+        {
+          "id": 3,
+          "question": "this is just a test",
+          "options": ["what", "is", "the", "answer"],
+          "answer_post_path": "/topics/1/questions/3/answers"
+        },
+      );
     const myApp = MaterialApp(home: QuestionDisplay(1));
     await tester.pumpWidget(myApp);
     await tester.pumpAndSettle();
@@ -90,59 +94,57 @@ void main() {
       (tester) async {
     // Override get topics API call
     // ignore: unused_local_variable
-    final topicInterceptor =
-        nock('https://dad-quiz-api.deno.dev').get('/topics')
-          ..reply(
-            200,
-            [
-              {
-                "id": 1,
-                "name": "TestingMock",
-                "question_path": "/topics/1/questions"
-              },
-              {
-                "id": 2,
-                "name": "Programming",
-                "question_path": "/topics/2/questions"
-              }
-            ],
-          );
+    final topicInterceptor = nock.get('/topics')
+      ..reply(
+        200,
+        [
+          {
+            "id": 1,
+            "name": "TestingMock",
+            "question_path": "/topics/1/questions"
+          },
+          {
+            "id": 2,
+            "name": "Programming",
+            "question_path": "/topics/2/questions"
+          }
+        ],
+      );
 
     // Override get questions API call
-    final questionInterceptor =
-        nock('https://dad-quiz-api.deno.dev').get('/topics/1/questions')
+    final questionInterceptor = nock.get('/topics/1/questions')
+      ..reply(
+        200,
+        {
+          "id": 3,
+          "question": "this is just a test",
+          "options": ["what", "is", "the", "answer"],
+          "answer_post_path": "/topics/1/questions/3/answers"
+        },
+      );
+    // Override wrong answer API call
+    // ignore: unused_local_variable
+    final answerInterceptor =
+        nock.post('/topics/1/questions/3/answers', {'answer': 'what'})
           ..reply(
             200,
             {
-              "id": 3,
-              "question": "this is just a test",
-              "options": ["what", "is", "the", "answer"],
-              "answer_post_path": "/topics/1/questions/3/answers"
+              "correct": false,
             },
-          );
-    // Override wrong answer API call
-    // ignore: unused_local_variable
-    final answerInterceptor = nock('https://dad-quiz-api.deno.dev')
-        .post('/topics/1/questions/3/answers', {'answer': 'what'})
-      ..reply(
-        200,
-        {
-          "correct": false,
-        },
-      )
-      ..onReply(() {});
+          )
+          ..onReply(() {});
 
     // Override correct answer API call
     // ignore: unused_local_variable
-    final answerInterceptor2 = nock('https://dad-quiz-api.deno.dev')
-        .post('/topics/1/questions/3/answers', {'answer': 'answer'})
-      ..reply(
-        200,
-        {
-          "correct": true,
-        },
-      )
-      ..onReply(() {});
+    final answerInterceptor2 =
+        nock.post('/topics/1/questions/3/answers', {'answer': 'answer'})
+          ..reply(
+            200,
+            {
+              "correct": true,
+            },
+          )
+          ..onReply(() {});
 
     // Initialize sharedPreferences
     SharedPreferences.setMockInitialValues({});

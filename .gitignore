@@ -46,3 +46,4 @@ app.*.map.json
 
 notes.txt
 application_instructions.txt
+*.env

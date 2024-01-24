@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_application/pages/main_page.dart';
 import 'package:nock/nock.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   setUpAll(() {
+    var baseUrl = dotenv.env['API_BASE_URL']!;
+    nock.defaultBase = baseUrl;
     nock.init();
   });
 
@@ -16,7 +21,7 @@ void main() {
   // Test that the buttons are generated based on the topics that the api returns
   testWidgets('All topics that the api returns are made as buttons',
       (tester) async {
-    final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
+    final interceptor = nock.get('/topics')
       ..reply(
         200,
         [
@@ -88,8 +93,7 @@ void main() {
   testWidgets('Main page shows text "no topics found" when api returns nothing',
       (tester) async {
     // ignore: unused_local_variable
-    final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
-      ..reply(200, []);
+    final interceptor = nock.get('/topics')..reply(200, []);
     const myApp = ProviderScope(child: MaterialApp(home: MainPage()));
     await tester.pumpWidget(myApp);
     await tester.pump();

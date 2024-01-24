@@ -6,6 +6,7 @@ import '../pages/statistics_page.dart';
 import 'helpers/shared_pref_helper.dart';
 import 'pages/generic_practice_displayer.dart';
 import 'theme.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // Set all the routes here
 final router = GoRouter(
@@ -29,6 +30,8 @@ final router = GoRouter(
 Future main() async {
   //since main is async we need to ensure that all the widgets are initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
   //initialize shared preferences
   await SharedPrefHelper.init();
 

@@ -4,9 +4,14 @@ import 'package:nock/nock.dart';
 import 'package:quiz_application/helpers/shared_pref_helper.dart';
 import 'package:quiz_application/pages/generic_practice_displayer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   setUpAll(() {
+    var baseUrl = dotenv.env['API_BASE_URL']!;
+    nock.defaultBase = baseUrl;
     nock.init();
   });
 
@@ -16,7 +21,8 @@ void main() {
   testWidgets(
       "Generic practice shows question from topic with fewest correct answers",
       (tester) async {
-    final interceptor = nock('https://dad-quiz-api.deno.dev').get('/topics')
+    //var baseUrl = dotenv.env['API_BASE_URL'];
+    final interceptor = nock.get('/topics')
       ..reply(
         200,
         [
@@ -37,40 +43,38 @@ void main() {
 
     // This api call should happen when we fetch the first question (since topic with id 3 has the fewest correct answers)
     // ignore: unused_local_variable
-    final questionInterceptor =
-        nock('https://dad-quiz-api.deno.dev').get('/topics/3/questions')
-          ..reply(
-            200,
-            {
-              "id": 3,
-              "question": "this question is about games",
-              "options": ["wrong", "wrong", "correct", "wrong"],
-              "answer_post_path": "/topics/3/questions/3/answers"
-            },
-          );
-    // ignore: unused_local_variable
-    final questionInterceptor2 =
-        nock('https://dad-quiz-api.deno.dev').get('/topics/2/questions')
-          ..reply(
-            200,
-            {
-              "id": 3,
-              "question": "Movie Mania",
-              "options": ["wrong", "wrong", "wrong", "correct"],
-              "answer_post_path": "/topics/2/questions/3/answers"
-            },
-          );
-
-    // ignore: unused_local_variable
-    final answerInterceptor = nock('https://dad-quiz-api.deno.dev')
-        .post('/topics/3/questions/3/answers', {'answer': 'correct'})
+    final questionInterceptor = nock.get('/topics/3/questions')
       ..reply(
         200,
         {
-          "correct": true,
+          "id": 3,
+          "question": "this question is about games",
+          "options": ["wrong", "wrong", "correct", "wrong"],
+          "answer_post_path": "/topics/3/questions/3/answers"
         },
-      )
-      ..onReply(() {});
+      );
+    // ignore: unused_local_variable
+    final questionInterceptor2 = nock.get('/topics/2/questions')
+      ..reply(
+        200,
+        {
+          "id": 3,
+          "question": "Movie Mania",
+          "options": ["wrong", "wrong", "wrong", "correct"],
+          "answer_post_path": "/topics/2/questions/3/answers"
+        },
+      );
+
+    // ignore: unused_local_variable
+    final answerInterceptor =
+        nock.post('/topics/3/questions/3/answers', {'answer': 'correct'})
+          ..reply(
+            200,
+            {
+              "correct": true,
+            },
+          )
+          ..onReply(() {});
     SharedPreferences.setMockInitialValues({
       'fun facts': 4,
       'movies': 3,
